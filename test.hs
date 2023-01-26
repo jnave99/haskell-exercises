@@ -10,6 +10,9 @@ half x = x / 2
 square :: Int -> Int
 square x = x * x
 
+circArea :: Float -> Float
+circArea r = pi * (r * r)
+
 getCharIn :: String -> Int -> Char
 getCharIn s i = s !! (i - 1)
 

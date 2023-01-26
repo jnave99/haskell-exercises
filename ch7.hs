@@ -54,3 +54,27 @@ nums x =
         LT -> -1
         GT -> 1
         EQ -> 0
+
+tensDigit :: Integral a => a -> a
+tensDigit x = xLast
+    where xLast = divM 10 x
+          divM d = (`mod` d) . (`div` d)
+
+hunsDigit :: Integral a => a -> a
+hunsDigit x = xLast
+    where xLast = divM 100 x
+          divM d = (`mod` 10) . (`div` d)
+
+foldBool :: a -> a -> Bool -> a 
+foldBool x y bool = 
+    case bool of 
+        True -> x 
+        False -> y 
+
+foldBoolG :: a -> a -> Bool -> a 
+foldBoolG x y bool
+    | bool = x 
+    | not bool = y 
+
+g :: (a -> b) -> (a, c) -> (b, c)
+g fun (a, b) = (fun a, b)

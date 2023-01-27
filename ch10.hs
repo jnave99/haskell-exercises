@@ -29,11 +29,9 @@ extractDate (DbDate time) = time
 filterDbDate :: [DatabaseItem] -> [UTCTime]
 filterDbDate items = map extractDate (filter filterNonDates items)
 
-foldDbHelper :: [DatabaseItem] -> [UTCTime]
-foldDbHelper (DbDate date) (DbDate date') = [date] ++ [date']
-foldDbHelper (DbDate date) _ = [date]
-foldDbHelper _ (DbDate date) = [date]
-foldDbHelper _ _ = []
+foldDbHelper :: [UTCTime] -> DatabaseItem -> [UTCTime]
+foldDbHelper arr (DbDate date') = arr ++ [date']
+foldDbHelper arr _ = arr
 
 foldDbDate :: [DatabaseItem] -> [UTCTime]
-foldDbDate items = foldl foldDbHelper (DbNumber 1) items
+foldDbDate items = foldl foldDbHelper [] items

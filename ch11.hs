@@ -1,4 +1,6 @@
 import Data.Char
+import Data.List
+import Data.Maybe
 
 data Price = Price Integer deriving (Eq, Show)
 data Manufacturer = Mini | Mazda | Tata deriving (Eq, Show)
@@ -76,7 +78,7 @@ allLanguages =
 allProgrammers :: [Programmer]
 allProgrammers = [(Programmer {os = x, lang = y}) | x <- allOperatingSystems, y <- allLanguages]
 
-{- BInary Tree stuff-}
+{- Binary Tree stuff-}
 
 data BinaryTree a =
     Leaf
@@ -158,3 +160,80 @@ capitalizeWords str = map format (words str)
     where 
         format :: String -> (String, String)
         format t@(x:xs) = (t, (toUpper x) : xs)
+
+{- Phone -}
+
+type DaPhone = [(String, Char)]
+
+phone = [("abc", '2'), ("def", '3'), ("ghi", '4'), ("jkl", '5'), ("mno", '6'), ("pqrs", '7'), ("tuv", '8'), ("wxyz", '9'), (" ", '0'), (".,", '#')] :: DaPhone
+
+convo :: [String]
+convo =
+    ["Wanna play 20 questions",
+    "Ya",
+    "U 1st haha",
+    "Lol OK. Have u ever tasted alcohol",
+    "Lol ya",
+    "Wow ur cool haha. Ur turn",
+    "OK. Do u think I am pretty Lol",
+    "Lol ya",
+    "Just making sure rofl ur turn"]
+
+type Digit = Char
+type Presses = Int
+
+reverseTaps :: DaPhone -> Char -> [(Digit, Presses)]
+reverseTaps phone char = capitalPress ++ charPress 
+     where 
+        capitalPress :: [(Digit, Presses)]
+        capitalPress = 
+            if char == toLower char then 
+                []
+            else 
+                [('*', 1)]
+        
+        charPress :: [(Digit, Presses)]
+        charPress = charPressHelper phone (toLower char)
+
+        charPressHelper :: DaPhone -> Char -> [(Digit, Presses)]
+        charPressHelper [] _ = [] :: [(Digit, Presses)]
+        charPressHelper (x:xs) char = 
+            if index /= -1 then 
+                [(snd x, index + 1)]
+            else 
+                charPressHelper xs char
+            
+            where 
+                index = fromMaybe (-1) $ elemIndex char (fst x) 
+
+type PressList = [(Digit, Presses)]
+
+cellPhonesDead :: DaPhone -> String -> PressList
+cellPhonesDead _ [] = []
+cellPhonesDead phone (x:xs) = (reverseTaps phone x) ++ (cellPhonesDead phone xs)
+
+fingerTaps :: PressList -> Presses
+fingerTaps li = foldl (+) 0 (map (\(di, p) -> p) li)
+
+mostPopularLetter :: String -> (Char, Int)
+mostPopularLetter str = foldl (\x y -> if snd y > snd x then y else x) (' ', 0) (buildList str [])
+    where
+        buildList :: String -> PressList -> PressList
+        buildList [] li = li
+        buildList (x:xs) li = buildList xs (updateList li x)
+
+        updateList :: PressList -> Char -> PressList
+        updateList [] char = [(char, 1)]
+        updateList (x:xs) char = 
+            if fst x == char then 
+                (fst x, snd x + 1) : xs
+            else 
+                x : (updateList xs char)
+
+coolestLtr :: [String] -> Char
+coolestLtr [] = ' '
+coolestLtr li = fst $ foldl (\x y -> if snd x > snd y then x else y) (' ', 0) (coolestHelper li)
+    where 
+        coolestHelper :: [String] -> PressList
+        coolestHelper [] = []
+        coolestHelper (x:xs) = (mostPopularLetter x) : (coolestHelper xs)  

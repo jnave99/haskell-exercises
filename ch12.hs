@@ -42,5 +42,13 @@ mkWord str = if fst counts > snd counts then Nothing else Just (Word' str)
     where 
         counts = foldl (\x y -> if isVowel y then (fst x + 1, snd x) else (fst x, snd x + 1)) (0, 0) str :: (Int, Int)
 
---myUnfoldr :: (b -> Maybe (a, b)) -> b -> [a] --Why do we use maybe?
---myUnfoldr func start = [start] ++ (myUnfoldr func (func start)) 
+myUnfoldr :: (b -> Maybe (a, b)) -> b -> [a] 
+myUnfoldr func start = 
+    case func start of
+    Nothing -> []
+    Just (a, b) -> [a] ++ (myUnfoldr func (b)) 
+
+catMaybes' :: [Maybe a] -> [a]
+catMaybes' [] = []
+catMaybes' ((Nothing):xs) = catMaybes' xs
+catMaybes' ((Just a): xs) = a : catMaybes' xs

@@ -1,6 +1,5 @@
 import Data.Monoid
 import Control.Monad
-import Test.QuickCheck
 
 {- Monoids -}
 
@@ -38,6 +37,34 @@ madlibbinBetter' e adv noun adj = mconcat [e, "! he said"
     , " and drove off with his " 
     , adj, " wife"]
 
-{- Quickcheck -}
+{- Monoid Instances -}
 
+newtype Identity a = Identity a deriving (Eq, Show)
 
+instance Semigroup a => Semigroup (Identity a) where 
+    (Identity a) <> (Identity b) = Identity (a <> b)
+
+data Two a b = Two a b deriving (Eq, Show)
+
+instance (Semigroup a, Semigroup b) => Semigroup (Two a b) where 
+    (Two a b) <> (Two a' b') = Two (a <> a') (b <> b')
+
+newtype BoolConj = BoolConj Bool deriving (Eq, Show)
+
+instance Semigroup BoolConj where 
+    (BoolConj b) <> (BoolConj b') = BoolConj (b && b')
+
+newtype BoolDisj = BoolDisj Bool  deriving (Eq, Show)
+
+instance Semigroup BoolDisj where 
+    (BoolDisj b) <> (BoolDisj b') = BoolDisj (b || b')
+
+data Or a b = Fst a | Snd b deriving (Eq, Show)
+
+instance Semigroup (Or a b) where 
+    Fst a <> Fst b = Fst b 
+    Snd a <> _ = Snd a 
+    Fst a <> Snd b = Snd b
+
+instance Monoid BoolConj where 
+    mempty = BoolConj True

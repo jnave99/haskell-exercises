@@ -124,3 +124,25 @@ instance Applicative List where
     (Cons f Nil) <*> (Cons a li') = Cons (f a) (fmap f li')
     (Cons f li) <*> t@(Cons a Nil) = (Cons (f a) Nil) <> (li <*> t)
     (Cons f li) <*> t@(Cons a li') = (Cons (f a) (fmap f li')) <> (li <*> t)
+
+data Errors =
+    DividedByZero
+    | StackOverflow
+    | MooglesChewedWires
+    deriving (Eq, Show)
+
+data Validation e a = 
+    Failure e
+  | Success a 
+  deriving (Eq, Show) 
+
+instance Functor (Validation e) where
+    fmap _ (Failure e) = Failure e
+    fmap f (Success a) = Success (f a)
+
+instance Monoid e => Applicative (Validation e) where 
+    pure a = Success a 
+    (Failure a) <*> (Failure a') = Failure (a <> a')
+    (Failure a) <*> _ = Failure a 
+    _ <*> (Failure a) = Failure a 
+    (Success f) <*> (Success a) = Success (f a)

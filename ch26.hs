@@ -18,3 +18,10 @@ instance Monad m => Monad (EitherT e m) where
             case v of 
                 (Left a) -> return (Left a)
                 (Right a) -> runEitherT (f a)
+
+swapEither :: Either a b -> Either b a 
+swapEither (Left a) = Right a
+swapEither (Right a) = Left a
+
+swapEitherT :: (Functor m) => EitherT e m a -> EitherT a m e 
+swapEitherT (EitherT ema) = EitherT $ (fmap swapEither ema)

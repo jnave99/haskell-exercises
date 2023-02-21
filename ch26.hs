@@ -1,4 +1,8 @@
 import Control.Monad 
+import Control.Monad.Trans.Except
+import Control.Monad.Trans.Maybe
+import Control.Monad.Trans.Reader
+import Data.Functor.Identity
 
 newtype EitherT e m a =
     EitherT { runEitherT :: m (Either e a) }
@@ -48,3 +52,17 @@ instance (Monad m) => Monad (StateT s m) where
         StateT $ \s -> do 
             a <- sma s 
             runStateT (f (fst a)) s
+
+rDec :: Num a => Reader a a
+rDec = ReaderT (\x -> return (x - 1)) 
+
+rShow :: Show a => ReaderT a Identity String 
+rShow = ReaderT (\x -> return (show x))
+
+rPrintAndInc :: (Num a, Show a) => ReaderT a IO a 
+rPrintAndInc = ReaderT readerFunc 
+    where 
+        readerFunc x = do 
+            putStrLn ("Hi: " ++ show x)
+
+            return (x+1)
